@@ -11,7 +11,7 @@ from data_structure import *
 clf, data = setup()
 
 def process_image(image):
-    out_img = find_cars_scaled(image, clf, data, draw=False, threshold=7)
+    out_img = find_cars_scaled(image, clf, data, draw=False, threshold=12)
     return out_img
 
 if __name__ == "__main__":

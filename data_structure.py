@@ -23,7 +23,7 @@ class dataStructure():
         self.hist_range = hist_range
 
         # bbox
-        self.running_average_n = 8
+        self.running_average_n = 12
         self.running_average_index = 0
         self.bbox_list = []
         for i in range(self.running_average_n):
