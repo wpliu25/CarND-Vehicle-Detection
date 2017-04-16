@@ -1,3 +1,5 @@
+flatten = lambda l: [item for sublist in l for item in sublist]
+
 class dataStructure():
     def __init__(self, features_train, features_test, labels_train, labels_test, X_scaler, color_space, orient, pix_per_cell, cell_per_block, hog_channel, spatial_size, hist_bins, spatial_feat, hist_feat, hog_feat, y_start_stop, hist_range):
 
@@ -19,3 +21,18 @@ class dataStructure():
         self.hog_feat = hog_feat
         self.y_start_stop = y_start_stop
         self.hist_range = hist_range
+
+        # bbox
+        self.running_average_n = 8
+        self.running_average_index = 0
+        self.bbox_list = []
+        for i in range(self.running_average_n):
+            self.bbox_list.append([])
+
+    def insert_bbox_list(self, bboxes):
+        self.bbox_list[self.running_average_index] = bboxes
+        self.running_average_index = self.running_average_index + 1
+        if(self.running_average_index >= self.running_average_n-1):
+            self.running_average_index = 0
+
+        return flatten(self.bbox_list)

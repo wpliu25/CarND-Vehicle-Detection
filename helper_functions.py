@@ -125,8 +125,9 @@ def slide_window_scaled(image):
 
     return all_windows
 
-def find_cars_scaled(image, clf, data, draw=False, ystart = 400, ystop = 656, scales = [1, 1.5, 2, 2.5], threshold=1):
+def find_cars_scaled(image, clf, data, draw=False, threshold=1, scales = [1, 1.5, 2, 2.5], ystart = 400, ystop = 656):
 
+    # Extend bbox list at multiple scales
     bbox_list_scaled = []
     for scale in scales:
         out_img, bbox_list = find_cars(image, ystart, ystop, scale, clf, data.X_scaler, data.orient, data.pix_per_cell,
@@ -135,10 +136,14 @@ def find_cars_scaled(image, clf, data, draw=False, ystart = 400, ystop = 656, sc
                                        data.hist_bins)
         bbox_list_scaled.extend(bbox_list)
 
+    # Set up heat map
     heat = np.zeros_like(image[:, :, 0]).astype(np.float)
 
+    # Get moving average list of bboxes from multimple frames
+    bbox_list_scaled_moving_average = data.insert_bbox_list(bbox_list_scaled)
+
     # Add heat to each box in box list
-    heat = add_heat(heat, bbox_list_scaled)
+    heat = add_heat(heat, bbox_list_scaled_moving_average)
 
     # Apply threshold to help remove false positives
     heat = apply_threshold(heat, threshold)

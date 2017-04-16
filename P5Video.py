@@ -6,13 +6,12 @@ import sys
 import matplotlib.pyplot as plt
 from process_data import *
 from data_structure import *
-from P5 import *
 
 # setup data and classifier
 clf, data = setup()
 
 def process_image(image):
-    out_img = find_cars_scaled(image, clf, data)
+    out_img = find_cars_scaled(image, clf, data, draw=False, threshold=7)
     return out_img
 
 if __name__ == "__main__":
