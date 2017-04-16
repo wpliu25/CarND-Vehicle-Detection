@@ -65,9 +65,11 @@ if __name__ == "__main__":
     # load data
     f = './data_images_features.p'
     if(os.path.exists(f)):
-        cars, not_cars, features_train, features_test, labels_train, labels_test = loadData(f)
+        cars, not_cars, examples_features, not_examples_features= loadData(f)
 
-    data = dataStructure(features_train, features_test, labels_train, labels_test)
+    features_train, features_test, labels_train, labels_test, X_scaler = norm_shuffle(cars, not_cars, examples_features, not_examples_features)
+
+    data = dataStructure(features_train, features_test, labels_train, labels_test, X_scaler)
 
     # train
     # color, spatial: Test Accuracy of SVC = 0.9181, 0.01135 Seconds to predict 10 labels with SVC

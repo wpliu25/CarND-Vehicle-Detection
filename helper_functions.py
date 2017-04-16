@@ -5,14 +5,14 @@ from sklearn.preprocessing import StandardScaler
 from lesson_functions import *
 from sklearn.model_selection import train_test_split
 
-def norm_shuffle(examples, not_examples):
+def norm_shuffle(examples, not_examples, examples_features, not_examples_features):
 
     # extract combined color and HOG features
-    examples_features = extract_features(examples, cspace='RGB', spatial_size=(32, 32), hist_bins=32, hist_range=(0, 256), orient=9,
-                        pix_per_cell=8, cell_per_block=2, hog_channel='ALL')
+    #examples_features = extract_features(examples, cspace='RGB', spatial_size=(32, 32), hist_bins=32, hist_range=(0, 256), orient=9,
+    #                    pix_per_cell=8, cell_per_block=2, hog_channel='ALL')
 
-    not_examples_features = extract_features(not_examples, cspace='RGB', spatial_size=(32, 32), hist_bins=32, hist_range=(0, 256), orient=9,
-                        pix_per_cell=8, cell_per_block=2, hog_channel='ALL')
+    #not_examples_features = extract_features(not_examples, cspace='RGB', spatial_size=(32, 32), hist_bins=32, hist_range=(0, 256), orient=9,
+    #                    pix_per_cell=8, cell_per_block=2, hog_channel='ALL')
 
     if len(examples_features) > 0:
         # Create an array stack of feature vectors
@@ -50,7 +50,10 @@ def norm_shuffle(examples, not_examples):
         plt.show()
         plt.savefig('./output_images/norm_features.png')
 
-        return X_train, X_test, y_train, y_test
+        print('Number of training samples : ', len(X_train))
+        print('Number of test samples : ', len(X_test))
+
+        return X_train, X_test, y_train, y_test, X_scaler
     else:
         print('Your function only returns empty feature vectors...')
 

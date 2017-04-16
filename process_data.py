@@ -3,6 +3,20 @@ import pickle
 import os
 from helper_functions import *
 
+### TODO: Tweak these parameters and see how the results change.
+color_space = 'RGB' # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
+orient = 9  # HOG orientations
+pix_per_cell = 8 # HOG pixels per cell
+cell_per_block = 2 # HOG cells per block
+hog_channel = 'ALL' # Can be 0, 1, 2, or "ALL"
+spatial_size = (16, 16) # Spatial binning dimensions
+hist_bins = 16    # Number of histogram bins
+spatial_feat = True # Spatial features on or off
+hist_feat = True # Histogram features on or off
+hog_feat = True # HOG features on or off
+y_start_stop = [None, None] # Min and max in y to search in slide_window()
+hist_range=(0, 256)
+
 def readData(pickle_file = 'data_images_features.p'):
 
     # files
@@ -15,7 +29,12 @@ def readData(pickle_file = 'data_images_features.p'):
     not_cars += glob.glob('./non-vehicles/GTI/*.png')
 
     # get features (shuffled, separate into train/test and normalized features)
-    features_train, features_test, labels_train, labels_test = norm_shuffle(cars, not_cars)
+    # extract combined color and HOG features
+    examples_features = extract_features(cars, cspace=color_space, spatial_size=spatial_size, hist_bins=hist_bins, hist_range=hist_range, orient=orient,
+                        pix_per_cell=pix_per_cell, cell_per_block=cell_per_block, hog_channel=hog_channel)
+
+    not_examples_features = extract_features(not_cars, cspace=color_space, spatial_size=spatial_size, hist_bins=hist_bins, hist_range=hist_range, orient=orient,
+                        pix_per_cell=pix_per_cell, cell_per_block=cell_per_block, hog_channel=hog_channel)
 
     # Save the data for easy access
     print('Saving data to pickle file...')
@@ -25,10 +44,20 @@ def readData(pickle_file = 'data_images_features.p'):
                 {
                     'cars': cars,
                     'not_cars': not_cars,
-                    'features_train': features_train,
-                    'features_test': features_test,
-                    'labels_train': labels_train,
-                    'labels_test': labels_test
+                    'examples_features': examples_features,
+                    'not_examples_features': not_examples_features,
+                    'color_space': color_space,
+                    'orient': orient,
+                    'pix_per_cell': pix_per_cell,
+                    'cell_per_block': cell_per_block,
+                    'hog_channel': hog_channel,
+                    'spatial_size': spatial_size,
+                    'hist_bins': hist_bins,
+                    'spatial_feat': spatial_feat,
+                    'hist_feat': hist_feat,
+                    'hog_feat': hog_feat,
+                    'y_start_stop': y_start_stop,
+                    'hist_range': hist_range
                 },
                 pfile, pickle.HIGHEST_PROTOCOL)
     except Exception as e:
@@ -37,25 +66,36 @@ def readData(pickle_file = 'data_images_features.p'):
 
     print('Data cached in pickle file.')
 
-    return cars, not_cars, features_train, features_test, labels_train, labels_test
+    return cars, not_cars, examples_features, not_examples_features, color_space, orient, pix_per_cell, cell_per_block, hog_channel, spatial_size, hist_bins, spatial_feat, hist_feat, hog_feat, y_start_stop, hist_range
 
 def loadData(data_file = 'data_images_features.p'):
     with open(data_file, mode='rb') as f:
         data = pickle.load(f)
     cars = data['cars']
     not_cars = data['not_cars']
-    features_train = data['features_train']
-    features_test = data['features_test']
-    labels_train = data['labels_train']
-    labels_test = data['labels_test']
-    return cars, not_cars, features_train, features_test, labels_train, labels_test
+    examples_features = data['examples_features']
+    not_examples_features = data['not_examples_features']
+    color_space = data['color_space']
+    orient = data['orient']
+    pix_per_cell = data['pix_per_cell']
+    cell_per_block = data['cell_per_block']
+    hog_channel = data['hog_channel']
+    spatial_size = data['spatial_size']
+    hist_bins = data['hist_bins']
+    spatial_feat = data['spatial_feat']
+    hist_feat = data['hist_feat']
+    hog_feat = data['hog_feat']
+    y_start_stop = data['y_start_stop']
+    hist_range = data['hist_range']
+
+    return cars, not_cars, examples_features, not_examples_features, color_space, orient, pix_per_cell, cell_per_block, hog_channel, spatial_size, hist_bins, spatial_feat, hist_feat, hog_feat, y_start_stop, hist_range
 
 if __name__ == "__main__":
     f = data_file = 'data_images_features.p'
     if(os.path.exists(f)):
-        cars, not_cars, features_train, features_test, labels_train, labels_test = loadData(f)
+        cars, not_cars, examples_features, not_examples_features, color_space, orient, pix_per_cell, cell_per_block, hog_channel, spatial_size, hist_bins, spatial_feat, hist_feat, hog_feat, y_start_stop, hist_range = loadData(f)
     else:
-        cars, not_cars, features_train, features_test, labels_train, labels_test = readData(f)
+        cars, not_cars, examples_features, not_examples_features, color_space, orient, pix_per_cell, cell_per_block, hog_channel, spatial_size, hist_bins, spatial_feat, hist_feat, hog_feat, y_start_stop, hist_range = readData(f)
 
-    print('Number of samples in training set: ', len(features_train))
-    print('Number of samples in  test set: ',len(features_test))
+    print('Number of samples of cars: ', len(examples_features))
+    print('Number of samples of not cars: ',len(not_examples_features))
