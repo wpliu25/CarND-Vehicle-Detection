@@ -2,9 +2,10 @@ import glob
 import pickle
 import os
 from helper_functions import *
+from data_structure import *
 
 ### TODO: Tweak these parameters and see how the results change.
-color_space = 'RGB' # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
+color_space = 'YCrCb' # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
 orient = 9  # HOG orientations
 pix_per_cell = 8 # HOG pixels per cell
 cell_per_block = 2 # HOG cells per block
@@ -89,6 +90,30 @@ def loadData(data_file = 'data_images_features.p'):
     hist_range = data['hist_range']
 
     return cars, not_cars, examples_features, not_examples_features, color_space, orient, pix_per_cell, cell_per_block, hog_channel, spatial_size, hist_bins, spatial_feat, hist_feat, hog_feat, y_start_stop, hist_range
+
+def setup(f = './data_images_features.p'):
+    # load data
+    if (os.path.exists(f)):
+        cars, not_cars, examples_features, not_examples_features, color_space, orient, pix_per_cell, cell_per_block, hog_channel, spatial_size, hist_bins, spatial_feat, hist_feat, hog_feat, y_start_stop, hist_range = loadData(f)
+    else:
+        cars, not_cars, examples_features, not_examples_features, color_space, orient, pix_per_cell, cell_per_block, hog_channel, spatial_size, hist_bins, spatial_feat, hist_feat, hog_feat, y_start_stop, hist_range = readData(f)
+
+    features_train, features_test, labels_train, labels_test, X_scaler = norm_shuffle(cars, not_cars, examples_features, not_examples_features)
+
+    data = dataStructure(features_train, features_test, labels_train, labels_test, X_scaler, color_space, orient, pix_per_cell, cell_per_block, hog_channel, spatial_size, hist_bins, spatial_feat, hist_feat, hog_feat, y_start_stop, hist_range)
+
+    # train
+    # color, spatial: Test Accuracy of SVC = 0.9181, 0.01135 Seconds to predict 10 labels with SVC
+    # color, spatial, hog0: Test Accuracy of SVC = 0.9716, 0.01754 Seconds to predict 10 labels with SVC
+    # color, spatial, hogAll: Test Accuracy of SVC = 0.9797, 0.0286 Seconds to predict 10 labels with SVC
+    clf = train_SVM_LinearSVC(data, True)
+
+    # color, spatial: Test Accuracy of DT = 0.9077, 0.01928 Seconds to predict 10 labels with DT
+    # color, spatial, hog0: Test Accuracy of DT = 0.9223, 0.03695 Seconds to predict 10 labels with DT
+    # color, spatial, hogAll: Test Accuracy of DT = 0.92, 0.05914 Seconds to predict 10 labels with DT
+    #clf = train_decision_tree(data, True)
+
+    return clf, data
 
 if __name__ == "__main__":
     f = data_file = 'data_images_features.p'

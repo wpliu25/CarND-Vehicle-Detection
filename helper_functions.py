@@ -1,18 +1,68 @@
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from sklearn.preprocessing import StandardScaler
 from lesson_functions import *
 from sklearn.model_selection import train_test_split
+from scipy.ndimage.measurements import label
+from sklearn.svm import LinearSVC
+from sklearn.metrics import accuracy_score
+from sklearn import tree
+
+def train_decision_tree(data, get_accuracy = False):
+    clf = tree.DecisionTreeClassifier()
+    # Check the training time for the decision tree
+    t=time.time()
+    clf.fit(data.features_train, data.labels_train)
+    t2 = time.time()
+    print(round(t2 - t, 2), 'Seconds to train decision tree...')
+
+    if(get_accuracy):
+        # Check the score of the DT
+        print('Test Accuracy of decision tree = ', round(clf.score(data.features_test, data.labels_test), 4))
+        # Check the prediction time for a single sample
+        t=time.time()
+        n_predict = 10
+        pred = clf.predict(data.features_test)
+        print('My decision tree predicts: ', pred[0:n_predict])
+        print('For these',n_predict, 'labels: ', data.labels_test[0:n_predict])
+        t2 = time.time()
+        print(round(t2-t, 5), 'Seconds to predict', n_predict,'labels with decision tree')
+
+        #acc = accuracy_score(pred, data.labels_test)
+        #print("acc %f" % (round(acc, 3)))
+
+    return clf
+
+def train_SVM_LinearSVC(data, get_accuracy = False):
+
+    # Use a linear SVC
+    clf = LinearSVC()
+    # Check the training time for the SVC
+    t=time.time()
+    clf.fit(data.features_train, data.labels_train)
+    t2 = time.time()
+    print(round(t2-t, 2), 'Seconds to train SVM Linear SVC...')
+
+    if(get_accuracy):
+        # Check the score of the SVC
+        print('Test Accuracy of SVC = ', round(clf.score(data.features_test, data.labels_test), 4))
+        # Check the prediction time for a single sample
+        t=time.time()
+        n_predict = 10
+        pred = clf.predict(data.features_test)
+        print('My SVC predicts: ', pred[0:n_predict])
+        print('For these',n_predict, 'labels: ', data.labels_test[0:n_predict])
+        t2 = time.time()
+        print(round(t2-t, 5), 'Seconds to predict', n_predict,'labels with SVC')
+
+        #acc = accuracy_score(pred, data.labels_test)
+        #print("acc %f" % (round(acc, 3)))
+
+    return clf
 
 def norm_shuffle(examples, not_examples, examples_features, not_examples_features):
-
-    # extract combined color and HOG features
-    #examples_features = extract_features(examples, cspace='RGB', spatial_size=(32, 32), hist_bins=32, hist_range=(0, 256), orient=9,
-    #                    pix_per_cell=8, cell_per_block=2, hog_channel='ALL')
-
-    #not_examples_features = extract_features(not_examples, cspace='RGB', spatial_size=(32, 32), hist_bins=32, hist_range=(0, 256), orient=9,
-    #                    pix_per_cell=8, cell_per_block=2, hog_channel='ALL')
 
     if len(examples_features) > 0:
         # Create an array stack of feature vectors
@@ -34,21 +84,22 @@ def norm_shuffle(examples, not_examples, examples_features, not_examples_feature
         #      'pixels per cell and', cell_per_block, 'cells per block')
         print('Feature vector length:', len(X_train[0]))
 
-        car_ind = np.random.randint(0, len(examples))
-        # Plot an example of raw and scaled features
-        fig = plt.figure(figsize=(12, 4))
-        plt.subplot(131)
-        plt.imshow(mpimg.imread(examples[car_ind]))
-        plt.title('Original Image')
-        plt.subplot(132)
-        plt.plot(X[car_ind])
-        plt.title('Raw Features')
-        plt.subplot(133)
-        plt.plot(scaled_X[car_ind])
-        plt.title('Normalized Features')
-        fig.tight_layout()
-        plt.show()
-        plt.savefig('./output_images/norm_features.png')
+        if(0):
+            car_ind = np.random.randint(0, len(examples))
+            # Plot an example of raw and scaled features
+            fig = plt.figure(figsize=(12, 4))
+            plt.subplot(131)
+            plt.imshow(mpimg.imread(examples[car_ind]))
+            plt.title('Original Image')
+            plt.subplot(132)
+            plt.plot(X[car_ind])
+            plt.title('Raw Features')
+            plt.subplot(133)
+            plt.plot(scaled_X[car_ind])
+            plt.title('Normalized Features')
+            fig.tight_layout()
+            plt.show()
+            #plt.savefig('./output_images/norm_features.png')
 
         print('Number of training samples : ', len(X_train))
         print('Number of test samples : ', len(X_test))
@@ -57,7 +108,7 @@ def norm_shuffle(examples, not_examples, examples_features, not_examples_feature
     else:
         print('Your function only returns empty feature vectors...')
 
-
+# not used in pipeline, exploratory only
 def slide_window_scaled(image):
     all_windows = []
 
@@ -73,3 +124,49 @@ def slide_window_scaled(image):
         all_windows += windows
 
     return all_windows
+
+def find_cars_scaled(image, clf, data, draw=False, ystart = 400, ystop = 656, scales = [1, 1.5, 2, 2.5], threshold=1):
+
+    bbox_list_scaled = []
+    for scale in scales:
+        out_img, bbox_list = find_cars(image, ystart, ystop, scale, clf, data.X_scaler, data.orient, data.pix_per_cell,
+                                       data.cell_per_block,
+                                       data.spatial_size,
+                                       data.hist_bins)
+        bbox_list_scaled.extend(bbox_list)
+
+    heat = np.zeros_like(image[:, :, 0]).astype(np.float)
+
+    # Add heat to each box in box list
+    heat = add_heat(heat, bbox_list_scaled)
+
+    # Apply threshold to help remove false positives
+    heat = apply_threshold(heat, threshold)
+
+    # Visualize the heatmap when displaying
+    heatmap = np.clip(heat, 0, 255)
+
+    # Find final boxes from heatmap using label function
+    labels = label(heatmap)
+    draw_img = draw_labeled_bboxes(np.copy(image), labels)
+
+    if(draw):
+        fig = plt.figure()
+        plt.subplot(121)
+        plt.imshow(draw_img)
+        plt.title('Car Positions')
+        plt.subplot(122)
+        plt.imshow(heatmap, cmap='hot')
+        plt.title('Heat Map')
+        fig.tight_layout()
+        plt.show()
+        # plt.savefig('./output_images/find_cars.png')
+
+        plt.imshow(out_img)
+        fig = plt.figure(figsize=(12, 4))
+        plt.title('find_cars')
+        fig.tight_layout()
+        plt.show()
+        # plt.savefig('./output_images/find_cars.png')
+
+    return draw_img
