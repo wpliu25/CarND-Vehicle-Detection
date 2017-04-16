@@ -53,3 +53,20 @@ def norm_shuffle(examples, not_examples):
         return X_train, X_test, y_train, y_test
     else:
         print('Your function only returns empty feature vectors...')
+
+
+def slide_window_scaled(image):
+    all_windows = []
+
+    x_start_stop_scaled = [[None, None], [None, None], [None, None], [None, None]]
+    y_start_stop_scaled = [[int(image.shape[0] / 2), int(image.shape[0] / 2)+64*2], [int(image.shape[0] / 2)+32, int(image.shape[0] / 2)+64*4], [int(image.shape[0] / 2)+32, int(image.shape[0] / 2)+64*5], [int(image.shape[0] / 2)+32, None]]
+    xy_window_scaled = [(64, 64), (128, 128), (200,200), (256, 256)]
+    xy_overlap_scaled = [(0.5, 0.5), (0.6, 0.6), (0.6, 0.6), (0.6, 0.6)]
+
+    for i in range(len(y_start_stop_scaled)):
+        windows = slide_window(image, x_start_stop=x_start_stop_scaled[i], y_start_stop=y_start_stop_scaled[i],
+                               xy_window=xy_window_scaled[i], xy_overlap=xy_overlap_scaled[i])
+
+        all_windows += windows
+
+    return all_windows
