@@ -125,7 +125,7 @@ def slide_window_scaled(image):
 
     return all_windows
 
-def find_cars_scaled(image, clf, data, draw=False, threshold=1, scales = [1, 1.5, 2, 2.5], ystart = 400, ystop = 656):
+def find_cars_scaled(image, clf, data, draw=False, threshold=1, scales = [1, 1.5, 2, 2.5], index = 0, ystart = 400, ystop = 656):
 
     # Extend bbox list at multiple scales
     bbox_list_scaled = []
@@ -157,21 +157,23 @@ def find_cars_scaled(image, clf, data, draw=False, threshold=1, scales = [1, 1.5
 
     if(draw):
         fig = plt.figure()
-        plt.subplot(121)
-        plt.imshow(draw_img)
-        plt.title('Car Positions')
-        plt.subplot(122)
-        plt.imshow(heatmap, cmap='hot')
-        plt.title('Heat Map')
-        fig.tight_layout()
-        plt.show()
-        # plt.savefig('./output_images/find_cars.png')
-
+        plt.subplot(151)
+        plt.imshow(image)
+        plt.title('input')
+        plt.subplot(152)
         plt.imshow(out_img)
-        fig = plt.figure(figsize=(12, 4))
-        plt.title('find_cars')
+        plt.title('bboxes')
+        plt.subplot(153)
+        plt.imshow(heatmap, cmap='hot')
+        plt.title('heat map')
+        plt.subplot(154)
+        plt.imshow(labels[0], cmap='gray')
+        plt.title('labels')
+        plt.subplot(155)
+        plt.imshow(draw_img)
+        plt.title('output')
         fig.tight_layout()
         plt.show()
-        # plt.savefig('./output_images/find_cars.png')
+        plt.savefig('./output_images/heatmap_'+str(index)+'.png')
 
     return draw_img

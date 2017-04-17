@@ -15,14 +15,18 @@ The goals / steps of this project are the following:
 * Estimate a bounding box for vehicles detected.
 
 [//]: # (Image References)
-[image1]: ./output_images/car_not_car.png
+[image1]: ./output_images/car_notcar.png
 [image2]: ./output_images/features.png
 [image3]: ./output_images/norm_features.png
 [image4]: ./output_images/windows_scaled.png
 [image5]: ./output_images/find_cars_test1.png
 [image6]: ./output_images/find_cars_test4.png
-[image7]: ./examples/labels_map.png
-[image8]: ./examples/output_bboxes.png
+[image7]: ./output_images/figure_2.png
+[image8]: ./output_images/figure_3.png
+[image9]: ./output_images/figure_4.png
+[image10]: ./output_images/figure_5.png
+[image11]: ./output_images/figure_6.png
+[image12]: ./output_images/figure_7.png
 [video1]: ./project_video_output.mp4
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
@@ -95,9 +99,10 @@ Ultimately I searched on four scales [1, 1.5, 2, 2.5] using YCrCb 3-channel HOG 
 
 ![alt text][image5]
 ![alt text][image6]
-
-To optimize the performance of my classifier I tried different combinations of the parameters listed above and used the final parameters that resulted in .99 accuracy performance. I also used all labeled data examples provided to conduct training and performance evaluzation. The training data set avoids a class imbalance issue being of 8792 car and 8968 not car images. To avoid video sequence bias, this dataset was randomized and split into 80% training and 20% test data (lines 78 through 81 of helper_functions.py)  
 ---
+
+To optimize the performance of my classifier I tried different combinations of the parameters listed above and used the final parameters that resulted in .99 accuracy performance. I also used all labeled data examples provided to conduct training and performance evaluzation. The training data set avoids a class imbalance issue being of 8792 car and 8968 not car images. To avoid video sequence bias, this dataset was randomized and split into 80% training and 20% test data (lines 78 through 81 of helper_functions.py)
+
 
 ### Video Implementation
 
@@ -113,17 +118,14 @@ The main code for combinng overlapping bounding boxes is contained in the functi
 
 Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
 
-### Here are six frames and their corresponding heatmaps:
+### Here are six frames and their corresponding bounding boxes, heatmaps, label and detection:
 
 ![alt text][image7]
-
-### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
 ![alt text][image8]
-
-### Here the resulting bounding boxes are drawn onto the last frame in the series:
 ![alt text][image9]
-
-
+![alt text][image10]
+![alt text][image11]
+![alt text][image12]
 
 ---
 
