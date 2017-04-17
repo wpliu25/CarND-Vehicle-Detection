@@ -117,6 +117,7 @@ hog_feat = True # HOG features on or off
 y_start_stop = [None, None] # Min and max in y to search in slide_window()
 hist_range=(0, 256)
 
+### Final parameters:
 Feature vector length: 6108
 Number of training samples :  14208
 Number of test samples :  3552
