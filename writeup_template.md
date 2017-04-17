@@ -104,25 +104,26 @@ Ultimately I searched on four scales [1, 1.5, 2, 2.5] using YCrCb 3-channel HOG 
 
 To optimize the performance of my classifier I tried different combinations of the parameters listed above and used the following final parameters that resulted in .99 accuracy performance. I also used all labeled data examples provided to conduct training and performance evaluzation. The training data set avoids a class imbalance issue being of 8792 car and 8968 not car images. To avoid video sequence bias, this dataset was randomized and split into 80% training and 20% test data (lines 78 through 81 of helper_functions.py)
 
-color_space = 'YCrCb' # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
-orient = 9  # HOG orientations
-pix_per_cell = 8 # HOG pixels per cell
-cell_per_block = 2 # HOG cells per block
-hog_channel = 'ALL' # Can be 0, 1, 2, or "ALL"
-spatial_size = (16, 16) # Spatial binning dimensions
-hist_bins = 16    # Number of histogram bins
-spatial_feat = True # Spatial features on or off
-hist_feat = True # Histogram features on or off
-hog_feat = True # HOG features on or off
-y_start_stop = [None, None] # Min and max in y to search in slide_window()
-hist_range=(0, 256)
-
 ### Final parameters:
-Feature vector length: 6108
-Number of training samples :  14208
-Number of test samples :  3552
-19.15 Seconds to train SVM Linear SVC...
-Test Accuracy of SVC =  0.9885
+* color_space = 'YCrCb' # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
+* orient = 9  # HOG orientations
+* pix_per_cell = 8 # HOG pixels per cell
+* cell_per_block = 2 # HOG cells per block
+* hog_channel = 'ALL' # Can be 0, 1, 2, or "ALL"
+* spatial_size = (16, 16) # Spatial binning dimensions
+* hist_bins = 16    # Number of histogram bins
+* spatial_feat = True # Spatial features on or off
+* hist_feat = True # Histogram features on or off
+* hog_feat = True # HOG features on or off
+* y_start_stop = [None, None] # Min and max in y to search in slide_window()
+* hist_range=(0, 256)
+
+### Final performance:
+* Feature vector length: 6108
+* Number of training samples :  14208
+* Number of test samples :  3552
+* 19.15 Seconds to train SVM Linear SVC...
+* Test Accuracy of SVC =  0.9885
 
 ### Video Implementation
 
