@@ -27,6 +27,7 @@ The goals / steps of this project are the following:
 [image10]: ./output_images/figure_5.png
 [image11]: ./output_images/figure_6.png
 [image12]: ./output_images/figure_7.png
+[image13]: ./output_images/test_1.png
 [video1]: ./project_video_output.mp4
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
@@ -95,7 +96,7 @@ The code to determine parameters for the sliding window search can be found in e
 
 ####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
-Ultimately I searched on four scales [1, 1.5, 2, 2.5] using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
+Ultimately I searched on four scales [1, 1.5, 2, 2.5] using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided results with false-positives.  Here are some example images:
 
 ![alt text][image5]
 ![alt text][image6]
@@ -127,6 +128,9 @@ Here's an example result showing the heatmap from a series of frames of video, t
 ![alt text][image11]
 ![alt text][image12]
 
+### Here is the previous image from section 2. after heat map and filtering for false-positives:
+
+![alt text][image13]
 ---
 
 ###Discussion
